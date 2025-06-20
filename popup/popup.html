@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Canvas Capture</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header >
+    <!-- Replace src with your icon path -->
+     <div >
+        <img src="camera-reverse-outline.svg" alt="Extension Icon">
+     </div>
+    
+    <div >
+      <h1>Canvas Recorder</h1>
+      <p>Capture canvas frames or video</p>
+    </div>
+  </header>
+  <div class="container">
+    <div class="section shared">
+      <div class="field">
+        <label for="duration">Duration (sec)</label>
+        <input type="number" id="duration" min="1" value="5">
+      </div>
+    </div>
+    <div class="section">
+      <h2>PNG Sequence</h2>
+      <div class="field">
+        <label for="png_fps">FPS</label>
+        <input type="number" id="png_fps" min="1" value="24">
+      </div>
+      <button class="btn" id="record_png">Capture PNG Sequance</button>
+    </div>
+    <div class="section">
+      <h2>WEBM Video</h2>
+      <div class="field">
+        <label for="webm_bitrate">Bitrate (kbps)</label>
+        <input type="number" id="webm_bitrate" min="100" value="2000">
+      </div>
+      <button class="btn" id="record_webm">Capture WEBM</button>
+    </div>
+  </div>
+</body>
+</html>
