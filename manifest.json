@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Canvas Frame Exporter",
-  "version": "1.1",
+  "version": "1.2",
   "description": "Capture and export real canvas frames (even WebGL) as images or video.",
   "permissions": [
     "scripting",

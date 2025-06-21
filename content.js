@@ -11,9 +11,7 @@
 
 
 (function () {
-  const FPS = 30;            
-  const DURATION = 32000;     
-  const PNG_FPS = 30;        
+       
 
   function getCanvasElement() {
     return (// id of the canvas can be change from site to site !!!
@@ -23,69 +21,57 @@
   }
 
   // Video recording via MediaRecorder
-  function startRecordingVideo(targetCanvas) {
-    const stream = targetCanvas.captureStream(FPS);
+  function startRecordingVideo(targetCanvas, duration = 5000, bitrate = 2_000_000) {
+    const stream = targetCanvas.captureStream();
     const recorder = new MediaRecorder(stream, {
       mimeType: 'video/webm; codecs=vp9',
-      videoBitsPerSecond: 5_000_000
+      videoBitsPerSecond: bitrate
     });
     const chunks = [];
-
-    recorder.ondataavailable = (e) => chunks.push(e.data);
+    recorder.ondataavailable = e => chunks.push(e.data);
     recorder.onstop = () => {
       const blob = new Blob(chunks, { type: 'video/webm' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = 'canvas_capture.webm';
+      a.href = url; a.download = 'canvas_capture.webm';
       a.click();
       URL.revokeObjectURL(url);
     };
-
     recorder.start();
-    console.log(`Recording video at ${FPS} FPS for ${DURATION}ms…`);
-
-    setTimeout(() => {
-      recorder.stop();
-      console.log('Video recording stopped. Downloading…');
-    }, DURATION);
+    console.log(`Recording video for ${duration}ms…`);
+    setTimeout(() => recorder.stop(), duration);
   }
 
   
-function exportPNGSequenceRAF(targetCanvas) {
+function exportPNGSequenceRAF(targetCanvas, duration = 5000, fps = 24) {
   const frames = [];
   const startTime = performance.now();
-  const interval = 1000 / PNG_FPS;
+  const interval = 1000 / fps;
   let lastCapture = startTime;
 
   function capture(now) {
-    if (now - startTime >= DURATION) {
-      // build the zip from the blob
-      return Promise.all(frames)
-        .then((blobs) => {
-          console.log(`Captured ${blobs.length} frames. Building ZIP…`);
+    if (now - startTime >= duration) {
+      Promise.all(frames)
+        .then(blobs => {
           const zip = new JSZip();
           blobs.forEach((blob, i) => {
-            const filename = `frame-${String(i).padStart(4, '0')}.png`;
-            zip.file(filename, blob);
+            const name = `frame-${String(i).padStart(4,'0')}.png`;
+            zip.file(name, blob);
           });
           return zip.generateAsync({ type: 'blob' });
         })
-        .then((zipBlob) => {
+        .then(zipBlob => {
           const url = URL.createObjectURL(zipBlob);
           const a = document.createElement('a');
-          a.href = url;
-          a.download = 'frames.zip';
+          a.href = url; a.download = 'frames.zip';
           a.click();
           URL.revokeObjectURL(url);
-          console.log('Amına kodumun frames.zip i sonunda indirildi.');
         })
-        .catch((err) => console.error('⚠️ Error in ZIP creation/download:', err));
+        .catch(console.error);
+      return;
     }
-
     if (now - lastCapture >= interval) {
       lastCapture = now;
-      // queue this frame
       const p = createImageBitmap(targetCanvas)
         .then(bitmap => {
           const off = new OffscreenCanvas(targetCanvas.width, targetCanvas.height);
@@ -94,11 +80,10 @@ function exportPNGSequenceRAF(targetCanvas) {
         });
       frames.push(p);
     }
-
     requestAnimationFrame(capture);
   }
 
-  console.log(`⌛ Starting PNG capture at (${PNG_FPS})FPS via requestAnimationFrame`);
+  console.log(`⌛ Starting PNG capture at (${fps})FPS via requestAnimationFrame`);
   requestAnimationFrame(capture);
 }
 
@@ -117,5 +102,30 @@ function exportPNGSequenceRAF(targetCanvas) {
     }
   }
 
-  waitForCanvasAndStart();
+  
+
+  chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  const canvas = getCanvasElement();
+  if (!canvas) {
+    console.error('No canvas found!');
+    return;
+  }
+  else{
+    console.log('Found canvas:', canvas);
+  }
+
+  switch (msg.action) {
+    case 'capture_png_sequence':
+      // call your function with the passed args
+      exportPNGSequenceRAF(canvas, msg.duration, msg.fps);
+      break;
+
+    case 'capture_webm_video':
+      startRecordingVideo(canvas, msg.duration, msg.bitrate);
+      break;
+
+    default:
+      console.warn('Unknown action:', msg.action);
+  }
+});
 })();
