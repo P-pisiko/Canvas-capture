@@ -87,7 +87,7 @@ function exportPNGSequenceRAF(targetCanvas, duration = 5000, fps = 24) {
   requestAnimationFrame(capture);
 }
 
-  // Main entry: wait for canvas then start capture
+  // old Main entry: wait for canvas then start capture
   function waitForCanvasAndStart(retries = 10) {
     const canvasElem = getCanvasElement();
     if (canvasElem) {
@@ -116,7 +116,6 @@ function exportPNGSequenceRAF(targetCanvas, duration = 5000, fps = 24) {
 
   switch (msg.action) {
     case 'capture_png_sequence':
-      // call your function with the passed args
       exportPNGSequenceRAF(canvas, msg.duration, msg.fps);
       break;
 
