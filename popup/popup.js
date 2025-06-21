@@ -1,4 +1,4 @@
-// 1) grab your inputs and buttons
+// 
 const durationInput   = document.getElementById('duration');
 const pngFpsInput     = document.getElementById('png_fps');
 const recordPngBtn    = document.getElementById('recordPngButton');
@@ -20,7 +20,7 @@ async function injectContentScript(tabId) {
   });
 }
 
-// 2) listen for the PNG‑sequence button:
+// event listener for the png sequance button
 recordPngBtn.addEventListener('click', async () => {
   
   
@@ -38,10 +38,10 @@ recordPngBtn.addEventListener('click', async () => {
   });
 });
 
-// 3) listen for the WEBM‑video button:
+// event listener for the webm video button
 recordWebmBtn.addEventListener('click', async () => {
   const durationSec = Number(durationInput.value) || 5;
-  const bitrateKbps = Number(bitrateInput.value) || 2000;
+  const bitrateKbps = Number(bitrateInput.value) || 8000;
 
   const tab = await getActiveTab();
   

@@ -1,4 +1,4 @@
-// 1) Override WebGL to preserve the drawing buffer
+//Override WebGL to preserve the drawing buffer
 (function () {
   const orig = HTMLCanvasElement.prototype.getContext;
   HTMLCanvasElement.prototype.getContext = function (type, attrs = {}) {
@@ -21,7 +21,7 @@
   }
 
   // Video recording via MediaRecorder
-  function startRecordingVideo(targetCanvas, duration = 5000, bitrate = 2_000_000) {
+  function startRecordingVideo(targetCanvas, duration = 5000, bitrate = 8_000_000) {
     const stream = targetCanvas.captureStream();
     const recorder = new MediaRecorder(stream, {
       mimeType: 'video/webm; codecs=vp9',
