@@ -37,7 +37,9 @@ Download the source code from the [releases](https://github.com/P-pisiko/Canvas-
 git clone https://github.com/P-pisiko/Canvas-capture.git
 ```
 After that, go in to *manage extensions* in your Chromium based browser.
+
 **Make sure** you enable developer mode on the top right corner.
+
 Lastly use Load Unpacked extension to complete the installation!
 
 
