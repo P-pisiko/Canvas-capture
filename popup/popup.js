@@ -1,10 +1,11 @@
 // 
-const durationInput   = document.getElementById('duration');
-const pngFpsInput     = document.getElementById('png_fps');
-const recordPngBtn    = document.getElementById('recordPngButton');
+const durationInput = document.getElementById('duration');
+const pngFpsInput  = document.getElementById('png_fps');
+const recordPngBtn = document.getElementById('recordPngButton');
 
-const bitrateInput    = document.getElementById('webm_bitrate');
-const recordWebmBtn   = document.getElementById('recordWebmButton');
+const bitrateInput = document.getElementById('webm_bitrate');
+const recordWebmBtn = document.getElementById('recordWebmButton');
+const recordMp4btn = document.getElementById("recordMp4Button");
 
 // helper function to get active tab
 function getActiveTab() {
@@ -22,8 +23,6 @@ async function injectContentScript(tabId) {
 
 // event listener for the png sequance button
 recordPngBtn.addEventListener('click', async () => {
-  
-  
 
   const durationSec = Number(durationInput.value) || 5;
   const fps = Number(pngFpsInput.value) || 24;
@@ -40,6 +39,7 @@ recordPngBtn.addEventListener('click', async () => {
 
 // event listener for the webm video button
 recordWebmBtn.addEventListener('click', async () => {
+
   const durationSec = Number(durationInput.value) || 5;
   const bitrateKbps = Number(bitrateInput.value) || 8000;
 
@@ -53,3 +53,19 @@ recordWebmBtn.addEventListener('click', async () => {
     bitrate:  bitrateKbps * 1000       // bits per second
   });
 });
+
+recordMp4btn.addEventListener("click", async () => {
+
+  const durationSec = Number(durationInput.value) || 5;
+  const bitrateKbps = Number(bitrateInput.value) || 8000;
+
+  const tab = await getActiveTab();
+
+  await injectContentScript(tab.id);
+
+  chrome.tabs.sendMessage(tab.id, {
+    action: 'capture_mp4_video',
+    duration: durationSec * 1000,   // ms
+    bitrate:  bitrateKbps * 1000       // bits per second
+  })
+})

@@ -21,7 +21,7 @@
   }
 
   // Video recording via MediaRecorder
-  function startRecordingVideo(targetCanvas, duration = 5000, bitrate = 8_000_000) {
+  function startRecordWebm(targetCanvas, duration = 5000, bitrate = 8_000_000) {
     const stream = targetCanvas.captureStream();
     const recorder = new MediaRecorder(stream, {
       mimeType: 'video/webm; codecs=vp9',
@@ -33,7 +33,7 @@
       const blob = new Blob(chunks, { type: 'video/webm' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url; a.download = 'canvas_capture.webm';
+      a.href = url; a.download = 'video.webm';
       a.click();
       URL.revokeObjectURL(url);
     };
@@ -42,50 +42,73 @@
     setTimeout(() => recorder.stop(), duration);
   }
 
-  
-function exportPNGSequenceRAF(targetCanvas, duration = 5000, fps = 24) {
-  const frames = [];
-  const startTime = performance.now();
-  const interval = 1000 / fps;
-  let lastCapture = startTime;
-
-  function capture(now) {
-    if (now - startTime >= duration) {
-      Promise.all(frames)
-        .then(blobs => {
-          const zip = new JSZip();
-          blobs.forEach((blob, i) => {
-            const name = `frame-${String(i).padStart(4,'0')}.png`;
-            zip.file(name, blob);
-          });
-          return zip.generateAsync({ type: 'blob' });
-        })
-        .then(zipBlob => {
-          const url = URL.createObjectURL(zipBlob);
-          const a = document.createElement('a');
-          a.href = url; a.download = 'frames.zip';
-          a.click();
-          URL.revokeObjectURL(url);
-        })
-        .catch(console.error);
-      return;
-    }
-    if (now - lastCapture >= interval) {
-      lastCapture = now;
-      const p = createImageBitmap(targetCanvas)
-        .then(bitmap => {
-          const off = new OffscreenCanvas(targetCanvas.width, targetCanvas.height);
-          off.getContext('2d').drawImage(bitmap, 0, 0);
-          return off.convertToBlob({ type: 'image/png' });
-        });
-      frames.push(p);
-    }
-    requestAnimationFrame(capture);
+   function startRecordMp4(targetCanvas, duration = 5000, bitrate = 8_000_000) {
+    const stream = targetCanvas.captureStream();
+    const recorder = new MediaRecorder(stream, {
+      mimeType: 'video/mp4; codecs="avc1.42E01E', 
+      videoBitsPerSecond: bitrate
+    });
+    const chunks = [];
+    recorder.ondataavailable = e => chunks.push(e.data);
+    recorder.onstop = () => {
+      const blob = new Blob(chunks, { type: 'video/mp4' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'video.mp4';
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+    recorder.start();
+    console.log(`Recording video for ${duration}ms…`);
+    setTimeout(() => recorder.stop(), duration);
   }
 
-  console.log(`⌛ Starting PNG capture at (${fps})FPS via requestAnimationFrame`);
-  requestAnimationFrame(capture);
-}
+
+
+  
+  function exportPNGSequenceRAF(targetCanvas, duration = 5000, fps = 24) {
+    const frames = [];
+    const startTime = performance.now();
+    const interval = 1000 / fps;
+    let lastCapture = startTime;
+
+    function capture(now) {
+      if (now - startTime >= duration) {
+        Promise.all(frames)
+          .then(blobs => {
+            const zip = new JSZip();
+            blobs.forEach((blob, i) => {
+              const name = `frame-${String(i).padStart(4, '0')}.png`;
+              zip.file(name, blob);
+            });
+            return zip.generateAsync({ type: 'blob' });
+          })
+          .then(zipBlob => {
+            const url = URL.createObjectURL(zipBlob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'frames.zip';
+            a.click();
+            URL.revokeObjectURL(url);
+          })
+          .catch(console.error);
+        return;
+      }
+      if (now - lastCapture >= interval) {
+        lastCapture = now;
+        const p = createImageBitmap(targetCanvas)
+          .then(bitmap => {
+            const off = new OffscreenCanvas(targetCanvas.width, targetCanvas.height);
+            off.getContext('2d').drawImage(bitmap, 0, 0);
+            return off.convertToBlob({ type: 'image/png' });
+          });
+        frames.push(p);
+      }
+      requestAnimationFrame(capture);
+    }
+
+    console.log(`⌛ Starting PNG capture at (${fps})FPS via requestAnimationFrame`);
+    requestAnimationFrame(capture);
+  }
 
   // old Main entry: wait for canvas then start capture
   function waitForCanvasAndStart(retries = 10) {
@@ -120,8 +143,12 @@ function exportPNGSequenceRAF(targetCanvas, duration = 5000, fps = 24) {
       break;
 
     case 'capture_webm_video':
-      startRecordingVideo(canvas, msg.duration, msg.bitrate);
+      startRecordWebm(canvas, msg.duration, msg.bitrate);
       break;
+
+    case 'capture_mp4_video':
+      startRecordMp4(canvas , msg.duration, msg.bitrate);
+      break
 
     default:
       console.warn('Unknown action:', msg.action);
