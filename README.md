@@ -6,7 +6,7 @@ This browser extension makes it possible to record and export the canvas in any 
 
 <br>
 
-<img src="https://raw.githubusercontent.com/P-pisiko/Canvas-capture/refs/heads/main/images/canvas%20.jpg"/>
+<img src="https://raw.githubusercontent.com/P-pisiko/Canvas-capture/refs/heads/main/images/canvas.jpg"/>
 
 <br>
 
