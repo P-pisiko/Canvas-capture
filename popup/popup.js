@@ -13,7 +13,8 @@ function getActiveTab() {
     .then(tabs => tabs[0]);
     
 }
-// helper to inject content.js content to the active tab.
+// helper to inject content.js content to the active tab. 
+//****DEPRECATED***
 async function injectContentScript(tabId) {
   await chrome.scripting.executeScript({
     target: { tabId },
@@ -27,8 +28,6 @@ recordPngBtn.addEventListener('click', async () => {
   const durationSec = Number(durationInput.value) || 5;
   const fps = Number(pngFpsInput.value) || 24;
   const tab = await getActiveTab();
-
-  await injectContentScript(tab.id)
 
   chrome.tabs.sendMessage(tab.id, {
     action:   'capture_png_sequence',
@@ -45,7 +44,7 @@ recordWebmBtn.addEventListener('click', async () => {
 
   const tab = await getActiveTab();
   
-  await injectContentScript(tab.id)
+
 
   chrome.tabs.sendMessage(tab.id, {
     action:   'capture_webm_video',
@@ -60,8 +59,6 @@ recordMp4btn.addEventListener("click", async () => {
   const bitrateKbps = Number(bitrateInput.value) || 8000;
 
   const tab = await getActiveTab();
-
-  await injectContentScript(tab.id);
 
   chrome.tabs.sendMessage(tab.id, {
     action: 'capture_mp4_video',

@@ -45,7 +45,7 @@
    function startRecordMp4(targetCanvas, duration = 5000, bitrate = 8_000_000) {
     const stream = targetCanvas.captureStream();
     const recorder = new MediaRecorder(stream, {
-      mimeType: 'video/mp4; codecs="avc1.42E01E', 
+      mimeType: 'video/mp4; codecs="avc1.64001F', 
       videoBitsPerSecond: bitrate
     });
     const chunks = [];

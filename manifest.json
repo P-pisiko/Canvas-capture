@@ -17,6 +17,12 @@
   "background": {
     "service_worker": "background.js"
   },
+  "content_scripts": [
+    {
+      "matches": ["https://*/*", "http://*/*"],
+      "js": ["content.js","libs/jszip.min.js"]
+    }
+  ],
   "web_accessible_resources": [
     {
       "resources": ["libs/jszip.min.js"],
