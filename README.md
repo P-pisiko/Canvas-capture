@@ -12,18 +12,23 @@ This browser extension makes it possible to record and export the canvas in any 
 
 ### __[ Main Futures of Canvas Capture ]__ 
 <br>
-
+</div>
+<div align="center" markdown="1">
 **PNG sequence export:** (Higher quality)
+</div>
 - Creates a bitmap of the current frame then turns it into a PNG image, repeats until the capture duration is reached.
 
+<div align="center" markdown="1">
 **Mp4 video export:**
+</div>
 - Uses MediaRecorder to record in mp4 format with a given bitrate.
 - Better quality then webm but slightly higher file sizes.
-
+<div align="center" markdown="1">
 **Webm video export:**
+</div>
 - Uses MediaRecorder to record in webm format with a given bitrate.
 - Bitrates lower then 8000 is not really recommended for this mode as its causes artifacts and smearing
-</div>
+
 
 ## Important Note
 When exporting a PNG sequence, if you set the framerate high—say, 60 FPS—but your hardware can only handle 30 FPS, the resulting video duration will be cut in half after encoding with FFmpeg, assuming the same framerate is used for both recording and encoding.  
